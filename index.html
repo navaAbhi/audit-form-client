@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supplier Audit Portal</title>
+    <link rel="stylesheet" href="styles/index.css" />
+</head>
+
+<body>
+
+    <!-- ─── Error state: invalid / expired link ─────────────────────────────── -->
+    <div id="screen-error" class="portal-screen hidden">
+        <div class="card card-centered">
+            <img class="state-img" src="zeroState.svg" alt="Not found" />
+            <h2 class="state-title">Link unavailable</h2>
+            <p class="state-desc">This response link is invalid or has expired. Please contact the auditor for a new
+                link.</p>
+        </div>
+    </div>
+
+    <!-- ─── Submitted state ───────────────────────────────────────────────────── -->
+    <div id="screen-submitted" class="portal-screen hidden">
+        <div class="card card-centered">
+            <div class="state-icon-circle">
+                <svg viewBox="0 0 16 16" fill="#059669" style="width:28px;height:28px;">
+                    <path d="M8 1l6 2v4c0 4-2.7 6.5-6 8-3.3-1.5-6-4-6-8V3l6-2z" />
+                </svg>
+            </div>
+            <h2 class="state-title">Response submitted</h2>
+            <p class="state-desc">Your responses have been securely submitted. You may close this page.</p>
+        </div>
+    </div>
+
+    <!-- ─── Main app shell (loading + ready + submitting states) ────────────── -->
+    <div id="screen-main" class="portal-app hidden">
+
+        <!-- Top nav -->
+        <div class="topnav">
+            <div class="max-w topnav-inner">
+                <button type="button" id="back-btn" class="back-btn">
+                    <svg class="icon-svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9.5 3L4 8l5.5 5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Back
+                </button>
+                <div class="secure-badge">
+                    <span class="icon">
+                        <svg class="icon-svg" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 1l6 2v4c0 4-2.7 6.5-6 8-3.3-1.5-6-4-6-8V3l6-2z" />
+                        </svg>
+                    </span>
+                    Secure supplier portal
+                </div>
+            </div>
+        </div>
+
+        <!-- Scrollable content -->
+        <div class="content-scroll">
+            <div class="max-w content-inner">
+
+                <!-- Audit info card -->
+                <div id="audit-card" class="card hidden">
+                    <span id="audit-type" class="audit-type-badge"></span>
+                    <h1 id="audit-title" class="audit-title"></h1>
+                    <p id="audit-supplier" class="audit-supplier"></p>
+                    <p id="audit-description" class="audit-description hidden"></p>
+                </div>
+
+                <!-- Loading skeleton -->
+                <div id="skeleton-wrap" class="skeleton-wrap">
+                    <div class="question-card">
+                        <div class="question-body">
+                            <div class="skeleton-badge"></div>
+                            <div class="skeleton-lines">
+                                <div class="skeleton-line w-75"></div>
+                                <div class="skeleton-line w-50"></div>
+                                <div class="skeleton-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-body">
+                            <div class="skeleton-badge"></div>
+                            <div class="skeleton-lines">
+                                <div class="skeleton-line w-75"></div>
+                                <div class="skeleton-line w-50"></div>
+                                <div class="skeleton-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-body">
+                            <div class="skeleton-badge"></div>
+                            <div class="skeleton-lines">
+                                <div class="skeleton-line w-75"></div>
+                                <div class="skeleton-line w-50"></div>
+                                <div class="skeleton-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions are injected here once loaded (one .question-card per question) -->
+                <div id="questions-container" class="skeleton-wrap hidden"></div>
+
+                <!-- Evidence upload section -->
+                <div id="evidence-section" class="card hidden">
+                    <div class="question-body">
+                        <div class="q-number">
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                                style="width:16px;height:16px;color:#6b7280;">
+                                <path d="M2 12l3-3 2 2 4-5 3 4" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <div class="q-content">
+                            <p class="evidence-title">
+                                Supporting Evidence
+                                <span class="evidence-subtitle">&mdash; Upload any relevant supporting documents</span>
+                            </p>
+
+                            <label class="file-drop evidence-drop">
+                                <svg class="evidence-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path
+                                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span class="file-drop-label">Click to upload files</span>
+                                <input type="file" id="evidence-input" multiple
+                                    accept=".pdf,.docx,.xlsx,.png,.jpg,.jpeg" />
+                            </label>
+
+                            <ul id="evidence-file-list" class="evidence-file-list hidden"></ul>
+                            <ul id="evidence-error-list" class="evidence-error-list hidden"></ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div id="footer" class="footer hidden">
+            <div class="max-w footer-inner">
+                <button type="button" id="submit-btn" class="submit-btn">
+                    <span id="submit-spinner" class="spinner hidden"></span>
+                    <span id="submit-label">Submit Response</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="scripts/main.js"></script>
+</body>
+
+</html>
